@@ -84,3 +84,11 @@ class TransactionsBalance(Schema):
 class TransactionsSummary(Schema):
     balance: TransactionsBalance
     payout: TransactionsBalance
+
+class NetRevenueSummary(Schema):
+    gross_revenue:int
+    refunds: int
+    payment_fees:int
+    payout_fees:int
+    new_revenue: int
+    
