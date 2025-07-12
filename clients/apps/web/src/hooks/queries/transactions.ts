@@ -44,3 +44,22 @@ export const useTransactionsSummary = (
     retry: defaultRetry,
     enabled: !!accountId,
   })
+
+export const useNetRevenueSummary = (
+  accountId: string,
+): UseQueryResult<schemas['NetRevenueSummary']> =>
+  useQuery({
+    queryKey: ['net_revenue_summary', accountId],
+    queryFn: () =>
+      unwrap(
+        api.GET('/v1/transactions/net_revenue_summary', {
+          params: {
+            query: { account_id: accountId },
+          },
+        }),
+      ),
+    retry: defaultRetry,
+    enabled: !!accountId,
+  })
+
+

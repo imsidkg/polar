@@ -90,5 +90,5 @@ class NetRevenueSummary(Schema):
     refunds: int
     payment_fees:int
     payout_fees:int
-    new_revenue: int
+    net_revenue: int
     
