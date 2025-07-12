@@ -18,11 +18,12 @@ from polar.models import (
     User,
 )
 from polar.models.organization import Organization
-from polar.models.transaction import TransactionType
+from polar.models.transaction import ProcessorFeeType, TransactionType
 from polar.models.user_organization import UserOrganization
 from polar.postgres import AsyncSession
 
 from ..schemas import (
+    NetRevenueSummary,
     TransactionsBalance,
     TransactionsSummary,
 )
@@ -217,6 +218,69 @@ class TransactionService(BaseTransactionService):
 
         result = await session.execute(statement)
         return int(result.scalar_one())
+
+    async def get_net_revenue_summary(
+        self, session: AsyncSession, account: Account
+    ) -> NetRevenueSummary:
+        statement = select(
+            cast(
+                type[int],
+                func.coalesce(
+                    func.sum(Transaction.amount).filter(
+                        Transaction.type == TransactionType.payment
+                    ),
+                    0,
+                ),
+            ),
+            cast(
+                type[int],
+                func.coalesce(
+                    func.sum(Transaction.amount).filter(
+                        Transaction.type == TransactionType.refund
+                    ),
+                    0,
+                ),
+            ),
+            cast(
+                type[int],
+                func.coalesce(
+                    func.sum(Transaction.amount).filter(
+                        Transaction.type == TransactionType.processor_fee,
+                        Transaction.processor_fee_type == ProcessorFeeType.payment,
+                    ),
+                    0,
+                ),
+            ),
+            cast(
+                type[int],
+                func.coalesce(
+                    func.sum(Transaction.amount).filter(
+                        Transaction.type == TransactionType.processor_fee,
+                        Transaction.processor_fee_type == ProcessorFeeType.payout,
+                    ),
+                    0,
+                ),
+            ),
+        ).where(Transaction.account_id == account.id)
+
+        result = await session.execute(statement)
+
+        (
+            gross_revenue,
+            refunds,
+            payment_fees,
+            payout_fees,
+        ) = result.one()._tuple()
+
+        net_revenue = gross_revenue - refunds - payment_fees - payout_fees
+
+        return NetRevenueSummary(
+            gross_revenue=gross_revenue,
+            refunds=refunds,
+            payment_fees=payment_fees,
+            payout_fees=payout_fees,
+            net_revenue=net_revenue,
+        )
 
     def _get_readable_transactions_statement(self, user: User) -> Select[Any]:
         PaymentUserOrganization = aliased(UserOrganization)

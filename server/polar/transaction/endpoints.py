@@ -15,7 +15,7 @@ from polar.transaction import (
     auth as transactions_auth,
 )
 
-from .schemas import Transaction, TransactionDetails, TransactionsSummary
+from .schemas import NetRevenueSummary, Transaction, TransactionDetails, TransactionsSummary
 from .service.transaction import TransactionSortProperty
 from .service.transaction import transaction as transaction_service
 
@@ -83,3 +83,16 @@ async def get_summary(
         raise ResourceNotFound()
 
     return await transaction_service.get_summary(session, account)
+
+
+@router.get("/net_revenue_summary", response_model=NetRevenueSummary)
+async def get_net_revenue_summary(
+    auth_subject: transactions_auth.TransactionsRead,
+    account_id: UUID4,
+    session: AsyncSession = Depends(get_db_session),
+) -> NetRevenueSummary:
+    account = await account_service.get(session, auth_subject, account_id)
+    if account is None:
+        raise ResourceNotFound()
+
+    return await transaction_service.get_net_revenue_summary(session, account)
