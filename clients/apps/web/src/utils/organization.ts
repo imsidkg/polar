@@ -11,6 +11,7 @@ const _getOrganizationBySlug = async (
       params: {
         query: {
           slug,
+          include_account: true,
         },
       },
       next: {

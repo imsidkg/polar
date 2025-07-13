@@ -32,7 +32,7 @@
   },
   "pkg": {
     "targets": [
-      "host"
+      "node22-linux-x64"
     ],
     "outputPath": "bin"
   }

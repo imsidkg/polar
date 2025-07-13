@@ -5,7 +5,7 @@ import DateRangePicker from '@/components/Metrics/DateRangePicker'
 import IntervalPicker from '@/components/Metrics/IntervalPicker'
 import MetricChartBox from '@/components/Metrics/MetricChartBox'
 import ProductSelect from '@/components/Products/ProductSelect'
-import { ParsedMetricsResponse, useMetrics } from '@/hooks/queries'
+import { ParsedMetricsResponse, useMetrics, useNetRevenueSummary } from '@/hooks/queries'
 import { fromISODate, toISODate } from '@/utils/metrics'
 import { schemas } from '@polar-sh/client'
 import { useRouter } from 'next/navigation'
@@ -22,6 +22,7 @@ export default function ClientPage({
 }: {
   organization: schemas['Organization']
   limits: schemas['MetricsLimits']
+  
   startDate: Date
   endDate: Date
   interval: schemas['TimeInterval']
@@ -42,6 +43,14 @@ export default function ClientPage({
     organization_id: organization.id,
     ...(productId ? { product_id: productId } : {}),
   })
+
+  console.log('organization id ' , organization )
+
+  const { data: netRevenueSummary, isLoading: netRevenueSummaryIsLoading } = useNetRevenueSummary(
+    organization.account_id ?? undefined,
+  )
+
+  console.log(netRevenueSummary)
 
   const dateRange = useMemo(
     () => ({ from: startDate, to: endDate }),
@@ -149,6 +158,15 @@ export default function ClientPage({
         </div>
       }
     >
+      {netRevenueSummary && (
+        <div>
+          <h2>Net Revenue: {netRevenueSummary.net_revenue}</h2>
+          <p>Gross Revenue: {netRevenueSummary.gross_revenue}</p>
+          <p>Refunds: {netRevenueSummary.refunds}</p>
+          <p>Payment Fees: {netRevenueSummary.payment_fees}</p>
+          <p>Payout Fees: {netRevenueSummary.payout_fees}</p>
+        </div>
+      )}
       <div className="flex flex-col gap-12">
         {data && (
           <>

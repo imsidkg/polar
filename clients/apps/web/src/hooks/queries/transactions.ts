@@ -46,7 +46,7 @@ export const useTransactionsSummary = (
   })
 
 export const useNetRevenueSummary = (
-  accountId: string,
+  accountId?: string,
 ): UseQueryResult<schemas['NetRevenueSummary']> =>
   useQuery({
     queryKey: ['net_revenue_summary', accountId],

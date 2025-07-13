@@ -13674,6 +13674,11 @@ export interface components {
              */
             avatar_url: string | null;
             /**
+             * Account Id
+             * @description The ID of the account this organization is connected to.
+             */
+            account_id: string | null;
+            /**
              * Email
              * @description Public support email.
              */
