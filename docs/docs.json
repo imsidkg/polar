@@ -488,7 +488,17 @@
                     ]
                   }
                 ]
-              }
+              },
+              "api-reference/webhooks/checkout.expired",
+              "api-reference/webhooks/customer_seat.assigned",
+              "api-reference/webhooks/customer_seat.claimed",
+              "api-reference/webhooks/customer_seat.revoked",
+              "api-reference/webhooks/member.created",
+              "api-reference/webhooks/member.updated",
+              "api-reference/webhooks/member.deleted",
+              "api-reference/webhooks/subscription.past_due",
+              "api-reference/webhooks/subscription.paused",
+              "api-reference/webhooks/subscription.resumed"
             ]
           },
           {
